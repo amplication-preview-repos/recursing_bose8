@@ -1,0 +1,52 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Presentation {
+  brandInstance   BrandInstance? @relation(fields: [brandInstanceId], references: [id])
+  brandInstanceId String?
+  createdAt       DateTime       @default(now())
+  feedbacks       Feedback[]
+  filePath        String?
+  id              String         @id @default(cuid())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Feedback {
+  createdAt       DateTime      @default(now())
+  feedbackMessage String?
+  id              String        @id @default(cuid())
+  presentation    Presentation? @relation(fields: [presentationId], references: [id])
+  presentationId  String?
+  updatedAt       DateTime      @updatedAt
+}
+
+model BrandRule {
+  brandInstance   BrandInstance?         @relation(fields: [brandInstanceId], references: [id])
+  brandInstanceId String?
+  createdAt       DateTime               @default(now())
+  id              String                 @id @default(cuid())
+  ruleDescription String?
+  severity        EnumBrandRuleSeverity?
+  updatedAt       DateTime               @updatedAt
+}
+
+model BrandInstance {
+  brandRules          BrandRule[]
+  createdAt           DateTime       @default(now())
+  id                  String         @id @default(cuid())
+  name                String?
+  presentations       Presentation[]
+  samplePresentation  Json?
+  samplePresentations Json?
+  updatedAt           DateTime       @updatedAt
+}
+
+enum EnumBrandRuleSeverity {
+  Option1
+}
